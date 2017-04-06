@@ -37,20 +37,6 @@ public struct OldPacketHeader: PacketHeader {
         return false
     }
     
-    public func oldFormatLengthType() -> OldPacketFormatLength? {
-        if let length = _length {
-            if length <= 0xFF {
-                return OldPacketFormatLength.OneOctet
-            }
-            if length < 0xFFFF {
-                return OldPacketFormatLength.TwoOctets
-            }
-            return OldPacketFormatLength.FourOctets
-        }
-        
-        return OldPacketFormatLength.Indeterminate
-    }
-    
     /// MARK - Serializable
     
     public static func deserialize(_ bytes: [UInt8]) -> (OldPacketHeader, Int)? {
@@ -66,9 +52,32 @@ public struct OldPacketHeader: PacketHeader {
                 }
             }
             // TODO: Check if we need to reverse the array due to endianness...
-            return [0x80 + (tag.rawValue << 2) + oldFormatLengthType()!.rawValue] + lengthBytes
+            return [0x80 + (tag.rawValue << 2) + oldFormatLengthType().rawValue] + lengthBytes
         }
         
-        return [0x80 + (tag.rawValue << 2) + oldFormatLengthType()!.rawValue]
+        return [0x80 + (tag.rawValue << 2) + oldFormatLengthType().rawValue]
+    }
+    
+    /// MARK - Private old format length type
+    
+    private enum OldPacketFormatLength: UInt8 {
+        case OneOctet = 0
+        case TwoOctets = 1
+        case FourOctets = 2
+        case Indeterminate = 3
+    }
+    
+    private func oldFormatLengthType() -> OldPacketFormatLength {
+        if let length = _length {
+            if length <= 0xFF {
+                return OldPacketFormatLength.OneOctet
+            }
+            if length < 0xFFFF {
+                return OldPacketFormatLength.TwoOctets
+            }
+            return OldPacketFormatLength.FourOctets
+        }
+        
+        return OldPacketFormatLength.Indeterminate
     }
 }

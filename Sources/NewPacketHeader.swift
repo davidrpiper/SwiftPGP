@@ -35,10 +35,6 @@ public struct NewPacketHeader: PacketHeader {
         return .New
     }
     
-    public func oldFormatLengthType() -> OldPacketFormatLength? {
-        return nil
-    }
-    
     public func packetTag() -> PacketTag {
         return tag
     }

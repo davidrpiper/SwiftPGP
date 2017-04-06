@@ -35,12 +35,6 @@ public protocol PacketHeader: Serializable {
         Returns false otherwise.
      */
     func isPartial() -> Bool
-    
-    /**
-        If this packet is an old format packet, return the length-type.
-        Returns nil for new format packets.
-     */
-    func oldFormatLengthType() -> OldPacketFormatLength?
 }
 
 extension PacketHeader {
